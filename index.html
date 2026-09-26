@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Секретный Видео Архив</title>
+    <title>Секретный Архив</title>
     <style>
         * {
             box-sizing: border-box;
@@ -20,7 +20,6 @@
             align-items: center;
             color: #fff;
             padding: 20px;
-            overflow-x: hidden;
         }
 
         .container {
@@ -36,6 +35,7 @@
             text-shadow: 0 0 10px #00fff2;
         }
 
+        /* Кнопка вызова GUI */
         .action-btn {
             padding: 15px 40px;
             font-size: 1.2rem;
@@ -55,6 +55,7 @@
             background: #fff;
         }
 
+        /* Окно ввода пароля (GUI) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -113,6 +114,7 @@
         .submit-btn { background: #ff007f; color: #fff; margin-right: 10px; }
         .close-btn { background: #333; color: #aaa; }
 
+        /* СЕКРЕТНАЯ ПАНЕЛЬ С ФАЙЛАМИ (Изначально скрыта) */
         .secret-panel {
             display: none;
             width: 100%;
@@ -131,12 +133,14 @@
             text-shadow: 0 0 10px rgba(0, 255, 242, 0.5);
         }
 
+        /* Сетка для файлов как на вашем рисунке */
         .files-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
         }
 
+        /* Карточка файла */
         .file-card {
             background: #111122;
             border: 2px solid #333;
@@ -144,7 +148,8 @@
             padding: 20px;
             text-align: center;
             transition: 0.3s;
-            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -158,88 +163,31 @@
             box-shadow: 0 5px 15px rgba(0, 255, 242, 0.2);
         }
 
-        .file-icon { font-size: 2.5rem; margin-bottom: 10px; }
-        .file-name { font-weight: bold; font-size: 1.1rem; }
-
-        .player-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-            z-index: 200;
+        .file-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
 
-        .player-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .countdown-text {
-            font-size: 8rem;
+        .file-name {
             font-weight: bold;
-            color: #00fff2;
-            text-shadow: 0 0 30px #00fff2;
-            display: none;
-            animation: pulse 1s infinite;
-        }
-
-        video {
-            display: none;
-            width: 100%;
-            max-width: 800px;
-            max-height: 80vh;
-            border-radius: 10px;
-            box-shadow: 0 0 30px rgba(0, 255, 242, 0.3);
-            outline: none;
-        }
-
-        .close-video-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 1px solid #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: none;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .close-video-btn:hover {
-            background: #ff007f;
-            border-color: #ff007f;
+            font-size: 1.1rem;
         }
 
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        @keyframes pulse {
-            0% { transform: scale(0.8); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(0.8); opacity: 0.5; }
-        }
     </style>
 </head>
 <body>
 
+    <!-- Стартовый экран -->
     <div class="container" id="mainWelcome">
         <h1>Secret Portal</h1>
         <button class="action-btn" onclick="toggleModal(true)">Войти по паролю</button>
     </div>
 
+    <!-- GUI ввода пароля -->
     <div class="modal-overlay" id="passwordModal">
         <div class="gui-box">
             <h3 style="margin-bottom:15px;">Введите Ключ</h3>
@@ -251,82 +199,56 @@
         </div>
     </div>
 
+    <!-- СЕКРЕТНАЯ ПАНЕЛЬ С ФАЙЛАМИ (Появится после ввода пароля) -->
     <div class="secret-panel" id="secretPanel">
-        <h2>Доступ разрешен. Выберите видео:</h2>
+        <h2>Доступ разрешен. Ваши файлы:</h2>
+        
         <div class="files-grid">
             
-            <div class="file-card" onclick="startVideo('video1.mp4')">
-                <div class="file-icon">🎬</div>
-                <div class="file-name">Секретное видео 1</div>
-            </div>
+            <!-- ФАЙЛ 1 -->
+            <a href="files/document.pdf" class="file-card" download>
+                <div class="file-icon">📄</div>
+                <div class="file-name">Инструкция.pdf</div>
+            </a>
 
-            <div class="file-card" onclick="startVideo('video2.mp4')">
-                <div class="file-icon">🎬</div>
-                <div class="file-name">Секретное видео 2</div>
-            </div>
+            <!-- ФАЙЛ 2 -->
+            <a href="files/photo.png" class="file-card" download>
+                <div class="file-icon">🖼️</div>
+                <div class="file-name">Картинка.png</div>
+            </a>
 
-            <div class="file-card" onclick="startVideo('video3.mp4')">
-                <div class="file-icon">🎬</div>
-                <div class="file-name">Секретное видео 3</div>
-            </div>
+            <!-- ФАЙЛ 3 -->
+            <a href="files/archive.zip" class="file-card" download>
+                <div class="file-icon">📦</div>
+                <div class="file-name">Архив.zip</div>
+            </a>
 
         </div>
     </div>
 
-    <div class="player-overlay" id="playerOverlay">
-        <button class="close-video-btn" id="closeVideoBtn" onclick="stopVideo()">Закрыть плеер</button>
-        <div class="countdown-text" id="countdown">3</div>
-        <video id="secretVideo" controls controlsList="nodownload"></video>
-    </div>
-
     <script>
         const CORRECT_PASSWORD = "09041488";
-        const modal = document.getElementById("passwordModal");
-        const input = document.getElementById("passInput");
-        
-        const playerOverlay = document.getElementById("playerOverlay");
-        const countdownEl = document.getElementById("countdown");
-        const videoEl = document.getElementById("secretVideo");
-        const closeVideoBtn = document.getElementById("closeVideoBtn");
+        const modal = document.getElementById('passwordModal');
+        const input = document.getElementById('passInput');
 
         function toggleModal(show) {
-            if (show) { 
-                modal.classList.add("active"); 
-                input.focus(); 
-            } else { 
-                modal.classList.remove("active"); 
-                input.value = ""; 
-            }
+            if (show) { modal.classList.add('active'); input.focus(); } 
+            else { modal.classList.remove('active'); input.value = ''; }
         }
 
         function checkPassword() {
             if (input.value === CORRECT_PASSWORD) {
                 toggleModal(false);
-                document.getElementById("mainWelcome").style.display = "none";
-                document.getElementById("secretPanel").style.display = "block";
+                document.getElementById('mainWelcome').style.display = 'none'; // Скрываем вход
+                document.getElementById('secretPanel').style.display = 'block'; // Показываем файлы
             } else {
                 alert("Неверный пароль!");
-                input.value = "";
+                input.value = '';
                 input.focus();
             }
         }
 
-        function startVideo(videoSrc) {
-            playerOverlay.classList.add("active");
-            countdownEl.style.display = "block";
-            videoEl.style.display = "none";
-            closeVideoBtn.style.display = "none";
-            
-            videoEl.src = videoSrc;
-            videoEl.load();
-
-            let count = 3;
-            countdownEl.innerText = count;
-
-            const timer = setInterval(function() {
-                count--;
-                if (count > 0) {
-                    countdownEl.innerText = count;
-                } else {
-                    clearInterval(timer);
-countdownEl.style.display = "none";videoEl.style.display = "block";closeVideoBtn.style.display = "block";videoEl.play();}}, 1000);}function stopVideo() {videoEl.pause();videoEl.src = "";playerOverlay.classList.remove("active");}input.addEventListener("keypress", function(e) {if (e.key === "Enter") {checkPassword();}});
+        input.addEventListener("keypress", function(e) { if (e.key === "Enter") checkPassword(); });
+    </script>
+</body>
+</html>
