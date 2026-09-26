@@ -36,7 +36,6 @@
             text-shadow: 0 0 10px #00fff2;
         }
 
-        /* Кнопка вызова GUI */
         .action-btn {
             padding: 15px 40px;
             font-size: 1.2rem;
@@ -56,7 +55,6 @@
             background: #fff;
         }
 
-        /* GUI ввода пароля */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -115,7 +113,6 @@
         .submit-btn { background: #ff007f; color: #fff; margin-right: 10px; }
         .close-btn { background: #333; color: #aaa; }
 
-        /* ПАНЕЛЬ С ВИДЕОФАЙЛАМИ */
         .secret-panel {
             display: none;
             width: 100%;
@@ -140,7 +137,6 @@
             gap: 20px;
         }
 
-        /* Карточка видео */
         .file-card {
             background: #111122;
             border: 2px solid #333;
@@ -165,7 +161,6 @@
         .file-icon { font-size: 2.5rem; margin-bottom: 10px; }
         .file-name { font-weight: bold; font-size: 1.1rem; }
 
-        /* ЭКРАН ПЛЕЕРА И ОБРАТНОГО ОТСЧЕТА */
         .player-overlay {
             position: fixed;
             top: 0;
@@ -187,7 +182,6 @@
             pointer-events: auto;
         }
 
-        /* Текст таймера 3 2 1 */
         .countdown-text {
             font-size: 8rem;
             font-weight: bold;
@@ -197,7 +191,6 @@
             animation: pulse 1s infinite;
         }
 
-        /* Сам тег видео */
         video {
             display: none;
             width: 100%;
@@ -208,7 +201,6 @@
             outline: none;
         }
 
-        /* Кнопка закрыть видео */
         .close-video-btn {
             position: absolute;
             top: 20px;
@@ -243,13 +235,11 @@
 </head>
 <body>
 
-    <!-- Стартовый экран -->
     <div class="container" id="mainWelcome">
         <h1>Secret Portal</h1>
         <button class="action-btn" onclick="toggleModal(true)">Войти по паролю</button>
     </div>
 
-    <!-- GUI ввода пароля -->
     <div class="modal-overlay" id="passwordModal">
         <div class="gui-box">
             <h3 style="margin-bottom:15px;">Введите Ключ</h3>
@@ -261,25 +251,20 @@
         </div>
     </div>
 
-    <!-- ПАНЕЛЬ С ВИДЕО (Появится после ввода пароля) -->
     <div class="secret-panel" id="secretPanel">
         <h2>Доступ разрешен. Выберите видео:</h2>
         <div class="files-grid">
             
-            <!-- КАРТОЧКА ВИДЕО 1 -->
-            <!-- Изменяйте путь внутри onclick="startVideo('СЮДА_ИМЯ_ВИДЕО.mp4')" -->
             <div class="file-card" onclick="startVideo('video1.mp4')">
                 <div class="file-icon">🎬</div>
                 <div class="file-name">Секретное видео 1</div>
             </div>
 
-            <!-- КАРТОЧКА ВИДЕО 2 -->
             <div class="file-card" onclick="startVideo('video2.mp4')">
                 <div class="file-icon">🎬</div>
                 <div class="file-name">Секретное видео 2</div>
             </div>
 
-            <!-- КАРТОЧКА ВИДЕО 3 -->
             <div class="file-card" onclick="startVideo('video3.mp4')">
                 <div class="file-icon">🎬</div>
                 <div class="file-name">Секретное видео 3</div>
@@ -288,7 +273,6 @@
         </div>
     </div>
 
-    <!-- ПОЛНОЭКРАННЫЙ ПЛЕЕР С ОТСЧЕТОМ -->
     <div class="player-overlay" id="playerOverlay">
         <button class="close-video-btn" id="closeVideoBtn" onclick="stopVideo()">Закрыть плеер</button>
         <div class="countdown-text" id="countdown">3</div>
@@ -297,30 +281,52 @@
 
     <script>
         const CORRECT_PASSWORD = "09041488";
-        const modal = document.getElementById('passwordModal');
-        const input = document.getElementById('passInput');
+        const modal = document.getElementById("passwordModal");
+        const input = document.getElementById("passInput");
         
-        const playerOverlay = document.getElementById('playerOverlay');
-        const countdownEl = document.getElementById('countdown');
-        const videoEl = document.getElementById('secretVideo');
-        const closeVideoBtn = document.getElementById('closeVideoBtn');
+        const playerOverlay = document.getElementById("playerOverlay");
+        const countdownEl = document.getElementById("countdown");
+        const videoEl = document.getElementById("secretVideo");
+        const closeVideoBtn = document.getElementById("closeVideoBtn");
 
         function toggleModal(show) {
-            if (show) { modal.classList.add('active'); input.focus(); } 
-            else { modal.classList.remove('active'); input.value = ''; }
+            if (show) { 
+                modal.classList.add("active"); 
+                input.focus(); 
+            } else { 
+                modal.classList.remove("active"); 
+                input.value = ""; 
+            }
         }
 
         function checkPassword() {
             if (input.value === CORRECT_PASSWORD) {
                 toggleModal(false);
-                document.getElementById('mainWelcome').style.display = 'none';
-                document.getElementById('secretPanel').style.display = 'block';
+                document.getElementById("mainWelcome").style.display = "none";
+                document.getElementById("secretPanel").style.display = "block";
             } else {
                 alert("Неверный пароль!");
-                input.value = '';
+                input.value = "";
                 input.focus();
             }
         }
 
-        // ЗАПУСК ОБРАТНОГО ОТСЧЕТА И ВИДЕО
         function startVideo(videoSrc) {
+            playerOverlay.classList.add("active");
+            countdownEl.style.display = "block";
+            videoEl.style.display = "none";
+            closeVideoBtn.style.display = "none";
+            
+            videoEl.src = videoSrc;
+            videoEl.load();
+
+            let count = 3;
+            countdownEl.innerText = count;
+
+            const timer = setInterval(function() {
+                count--;
+                if (count > 0) {
+                    countdownEl.innerText = count;
+                } else {
+                    clearInterval(timer);
+countdownEl.style.display = "none";videoEl.style.display = "block";closeVideoBtn.style.display = "block";videoEl.play();}}, 1000);}function stopVideo() {videoEl.pause();videoEl.src = "";playerOverlay.classList.remove("active");}input.addEventListener("keypress", function(e) {if (e.key === "Enter") {checkPassword();}});
