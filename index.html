@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Секретная Зона</title>
+    <title>Секретный Архив</title>
     <style>
         * {
             box-sizing: border-box;
@@ -14,35 +14,28 @@
 
         body {
             background: radial-gradient(circle, #1a1a2e 0%, #0f0f1b 100%);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             color: #fff;
-            overflow: hidden;
+            padding: 20px;
         }
 
-        /* Главный контейнер */
         .container {
             text-align: center;
-            animation: fadeIn 1s ease-in-out;
+            transition: all 0.5s ease;
         }
 
         h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            text-shadow: 0 0 10px #00fff2, 0 0 20px #00fff2;
+            text-shadow: 0 0 10px #00fff2;
         }
 
-        p {
-            font-size: 1.2rem;
-            color: #8f94fb;
-            margin-bottom: 40px;
-        }
-
-        /* Прикольная неоновая кнопка */
+        /* Кнопка вызова GUI */
         .action-btn {
             padding: 15px 40px;
             font-size: 1.2rem;
@@ -53,16 +46,16 @@
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 0 15px rgba(0, 255, 242, 0.4);
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
 
         .action-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 25px #00fff2, 0 0 40px #00fff2;
+            box-shadow: 0 0 25px #00fff2;
             background: #fff;
         }
 
-        /* Окно GUI (Модальное окно) */
+        /* Окно ввода пароля (GUI) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -76,7 +69,7 @@
             align-items: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.3s ease;
             z-index: 100;
         }
 
@@ -93,25 +86,11 @@
             width: 350px;
             text-align: center;
             box-shadow: 0 0 30px rgba(255, 0, 127, 0.3);
-            transform: translateY(-50px);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .modal-overlay.active .gui-box {
-            transform: translateY(0);
-        }
-
-        .gui-box h2 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #ff007f;
-            text-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
-        }
-
-        /* Поле ввода пароля */
         .password-input {
             width: 100%;
-            padding: 12px 20px;
+            padding: 12px;
             background: #0f0f1b;
             border: 1px solid #333;
             border-radius: 10px;
@@ -120,70 +99,130 @@
             text-align: center;
             outline: none;
             margin-bottom: 20px;
-            transition: border-color 0.3s;
         }
 
-        .password-input:focus {
-            border-color: #ff007f;
-            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
-        }
+        .password-input:focus { border-color: #ff007f; }
 
-        /* Кнопки внутри GUI */
         .gui-btn {
-            padding: 10px 25px;
-            font-size: 1rem;
+            padding: 10px 20px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.2s;
         }
 
-        .submit-btn {
-            background: #ff007f;
+        .submit-btn { background: #ff007f; color: #fff; margin-right: 10px; }
+        .close-btn { background: #333; color: #aaa; }
+
+        /* СЕКРЕТНАЯ ПАНЕЛЬ С ФАЙЛАМИ (Изначально скрыта) */
+        .secret-panel {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            background: rgba(22, 22, 42, 0.6);
+            border: 2px solid #00fff2;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(0, 255, 242, 0.15);
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        .secret-panel h2 {
+            margin-bottom: 25px;
+            color: #00fff2;
+            text-shadow: 0 0 10px rgba(0, 255, 242, 0.5);
+        }
+
+        /* Сетка для файлов как на вашем рисунке */
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        /* Карточка файла */
+        .file-card {
+            background: #111122;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: 0.3s;
+            text-decoration: none;
             color: #fff;
-            margin-right: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
         }
 
-        .submit-btn:hover {
-            background: #ff3399;
-            box-shadow: 0 0 15px #ff007f;
+        .file-card:hover {
+            border-color: #00fff2;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 255, 242, 0.2);
         }
 
-        .close-btn {
-            background: #333;
-            color: #aaa;
+        .file-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
 
-        .close-btn:hover {
-            background: #444;
-            color: #fff;
+        .file-name {
+            font-weight: bold;
+            font-size: 1.1rem;
         }
 
-        /* Анимации */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- Стартовый экран -->
+    <div class="container" id="mainWelcome">
         <h1>Secret Portal</h1>
-        <p>Для доступа к скрытому контенту требуется верификация</p>
-        <button class="action-btn" onclick="toggleModal(true)">Войти в систему</button>
+        <button class="action-btn" onclick="toggleModal(true)">Войти по паролю</button>
     </div>
 
-    <!-- Компонент GUI с паролем -->
+    <!-- GUI ввода пароля -->
     <div class="modal-overlay" id="passwordModal">
         <div class="gui-box">
-            <h2>Введите Ключ Доступа</h2>
-            <input type="password" id="passInput" class="password-input" placeholder="••••••••" maxlength="12">
+            <h3 style="margin-bottom:15px;">Введите Ключ</h3>
+            <input type="password" id="passInput" class="password-input" placeholder="••••••••">
             <div>
                 <button class="gui-btn submit-btn" onclick="checkPassword()">Проверить</button>
                 <button class="gui-btn close-btn" onclick="toggleModal(false)">Отмена</button>
             </div>
+        </div>
+    </div>
+
+    <!-- СЕКРЕТНАЯ ПАНЕЛЬ С ФАЙЛАМИ (Появится после ввода пароля) -->
+    <div class="secret-panel" id="secretPanel">
+        <h2>Доступ разрешен. Ваши файлы:</h2>
+        
+        <div class="files-grid">
+            
+            <!-- ФАЙЛ 1 -->
+            <a href="files/document.pdf" class="file-card" download>
+                <div class="file-icon">📄</div>
+                <div class="file-name">Инструкция.pdf</div>
+            </a>
+
+            <!-- ФАЙЛ 2 -->
+            <a href="files/photo.png" class="file-card" download>
+                <div class="file-icon">🖼️</div>
+                <div class="file-name">Картинка.png</div>
+            </a>
+
+            <!-- ФАЙЛ 3 -->
+            <a href="files/archive.zip" class="file-card" download>
+                <div class="file-icon">📦</div>
+                <div class="file-name">Архив.zip</div>
+            </a>
+
         </div>
     </div>
 
@@ -192,37 +231,24 @@
         const modal = document.getElementById('passwordModal');
         const input = document.getElementById('passInput');
 
-        // Открытие и закрытие GUI окна
         function toggleModal(show) {
-            if (show) {
-                modal.classList.add('active');
-                input.focus();
-            } else {
-                modal.classList.remove('active');
-                input.value = '';
-            }
+            if (show) { modal.classList.add('active'); input.focus(); } 
+            else { modal.classList.remove('active'); input.value = ''; }
         }
 
-        // Проверка правильности пароля
         function checkPassword() {
             if (input.value === CORRECT_PASSWORD) {
-                alert("Доступ разрешен! Пароль верный.");
-                // Здесь можно перенаправить на другую страницу или открыть секрет
                 toggleModal(false);
+                document.getElementById('mainWelcome').style.display = 'none'; // Скрываем вход
+                document.getElementById('secretPanel').style.display = 'block'; // Показываем файлы
             } else {
-                alert("Неверный пароль! Доступ заблокирован.");
+                alert("Неверный пароль!");
                 input.value = '';
                 input.focus();
             }
         }
 
-        // Клик по Enter в поле ввода тоже сработает
-        input.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                checkPassword();
-            }
-        });
+        input.addEventListener("keypress", function(e) { if (e.key === "Enter") checkPassword(); });
     </script>
-
 </body>
 </html>
