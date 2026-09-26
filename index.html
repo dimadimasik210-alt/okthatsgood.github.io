@@ -1,9 +1,228 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Мой первый сайт</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Секретная Зона</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle, #1a1a2e 0%, #0f0f1b 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* Главный контейнер */
+        .container {
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #00fff2, 0 0 20px #00fff2;
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #8f94fb;
+            margin-bottom: 40px;
+        }
+
+        /* Прикольная неоновая кнопка */
+        .action-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #101026;
+            background: #00fff2;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 255, 242, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00fff2, 0 0 40px #00fff2;
+            background: #fff;
+        }
+
+        /* Окно GUI (Модальное окно) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .gui-box {
+            background: #16162a;
+            border: 2px solid #ff007f;
+            padding: 40px;
+            border-radius: 20px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.3);
+            transform: translateY(-50px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.active .gui-box {
+            transform: translateY(0);
+        }
+
+        .gui-box h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ff007f;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
+        }
+
+        /* Поле ввода пароля */
+        .password-input {
+            width: 100%;
+            padding: 12px 20px;
+            background: #0f0f1b;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .password-input:focus {
+            border-color: #ff007f;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+        }
+
+        /* Кнопки внутри GUI */
+        .gui-btn {
+            padding: 10px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .submit-btn {
+            background: #ff007f;
+            color: #fff;
+            margin-right: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #ff3399;
+            box-shadow: 0 0 15px #ff007f;
+        }
+
+        .close-btn {
+            background: #333;
+            color: #aaa;
+        }
+
+        .close-btn:hover {
+            background: #444;
+            color: #fff;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
-    <h1>Привет, мир! Мой сайт на GitHub работает!</h1>
+
+    <div class="container">
+        <h1>Secret Portal</h1>
+        <p>Для доступа к скрытому контенту требуется верификация</p>
+        <button class="action-btn" onclick="toggleModal(true)">Войти в систему</button>
+    </div>
+
+    <!-- Компонент GUI с паролем -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="gui-box">
+            <h2>Введите Ключ Доступа</h2>
+            <input type="password" id="passInput" class="password-input" placeholder="••••••••" maxlength="12">
+            <div>
+                <button class="gui-btn submit-btn" onclick="checkPassword()">Проверить</button>
+                <button class="gui-btn close-btn" onclick="toggleModal(false)">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_PASSWORD = "09041488";
+        const modal = document.getElementById('passwordModal');
+        const input = document.getElementById('passInput');
+
+        // Открытие и закрытие GUI окна
+        function toggleModal(show) {
+            if (show) {
+                modal.classList.add('active');
+                input.focus();
+            } else {
+                modal.classList.remove('active');
+                input.value = '';
+            }
+        }
+
+        // Проверка правильности пароля
+        function checkPassword() {
+            if (input.value === CORRECT_PASSWORD) {
+                alert("Доступ разрешен! Пароль верный.");
+                // Здесь можно перенаправить на другую страницу или открыть секрет
+                toggleModal(false);
+            } else {
+                alert("Неверный пароль! Доступ заблокирован.");
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        // Клик по Enter в поле ввода тоже сработает
+        input.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkPassword();
+            }
+        });
+    </script>
+
 </body>
 </html>
